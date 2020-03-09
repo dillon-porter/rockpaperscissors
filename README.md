@@ -1,0 +1,1 @@
+This is a rock, paper, or scissors JavaScript Project for the Odin Project!
