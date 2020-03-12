@@ -1,98 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Rock, Paper, Scissors</title>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8">
 </head>
 <body>
-    <script>
+  
+  <button id="rock">Rock!</button>
+  <button id="paper">Paper!</button>
+  <button id="scissors">Scissors!</button>
+  <div id="roundResult"></div>
+  <div id="scoreMessage">First to Five?</div>
+  <div id="whoWon"></div>
+ <script>
 
-const choices = {rock: 0, paper: 1, scissors: 2};
-const continueOptions = {y: true, yes: true, n: false, no: false};
-const resultOptions = ["You lose!", "You win!", "Draw!"];
+const rock = document.querySelector('#rock');
+const paper = document.querySelector('#paper')
+const scissors = document.querySelector('#scissors');
 
-main();
+roundResult = document.querySelector('#roundResult');
+scoreMessage = document.querySelector('#scoreMessage');
+whoWon = document.querySelector('#whoWon');
 
-//main function to play the game
-function main() {
+let playerScore = 0;
+let computerScore = 0;
 
-  // initial setup of variables for playing the game
-  let continueChoice = "y",
-    playerSelection,
-    computerSelection;
+function computerPlay(){
+  computerChoice = ['Paper', 'Rock', 'Scissors'];
+  randomChoice = Math.floor(Math.random() * 3);
+  return computerChoice[randomChoice];
+}
 
-  // use a while loop to continue playing until user chooses to stop
-  while (continueOptions[continueChoice]) {
+function cleanInput(selection){
+  if (typeof(selection) != "string"){
+    return false;
+  }else if (selection.length < 4){
+    return false;
+  }else{
+    selection = selection[0].toUpperCase() + selection.slice(1).toLowerCase();
 
-    let continueText;
-
-    // take input from the player
-    do {
-      playerSelection = prompt("Please choose rock, paper or scissors (type the full word)").toLowerCase();
-      // handle invalid selection with console output
-      if (!(playerSelection in choices)) {
-        console.log("Invalid choice, please type 'rock' or 'paper' or 'scissors'");
-      }
+    validInput = {'Paper':'', 'Rock':'', 'Scissors':''};
+    if (selection in validInput == false){
+      return false;
+    }else{
+      return selection;
     }
-    // loops back to the start of the do-while loop if selection is invalid
-    while (!(playerSelection in choices));
+  }
+}
 
-    // get the computer selection
-    computerSelection = computerPlay();
-
-    // simulate the game given the choices and output the result to the console
-    outcome = playRound(playerSelection, computerSelection);
-
-    continueText = `Player chose ${playerSelection}, computer chose ${computerSelection}\n`;
-    continueText += resultOptions[outcome] + '\n\n';
-
-    // play again code
-    do  {
-      continueText += "Do you wish to play again? (y/n)"
-      continueChoice = prompt(continueText);
-      // handle invalid selection with console output
-      if (!(continueChoice in continueOptions)) {
-        continueText = "Invalid choice, please enter 'y' or 'n' followed by enter\n\n";
-      }
-    }
-    // loops back to the start of the do-while loop if selection is invalid
-    while (!(continueChoice in continueOptions));
-
+function playRound(playerSelection, computerSelection){
+  playerSelection = cleanInput(playerSelection);
+  computerSelection = cleanInput(computerSelection);
+  whoWon.style.display = "none";
+  if (playerSelection == false | computerSelection == false){
+    roundResult.textContent = "Please enter 'Paper', 'Rock', or 'Scissors'.";
+    scoreMessage.textContent = "Computer: " + computerScore + " Player: " + playerScore;
+  }else if (playerSelection === computerSelection){
+    roundResult.textContent = "It's a tie! You both selected " + playerSelection + ".";
+    scoreMessage.textContent = "Computer: " + computerScore + " Player: " + playerScore;
+  }else if (playerSelection === 'Scissors' && computerSelection === 'Paper'){
+    roundResult.textContent = "You Win! Scissors beats Paper!";
+    playerScore++;
+    scoreMessage.textContent = "Computer: " + computerScore + " Player: " + playerScore;
+  }else if (computerSelection === 'Scissors' && playerSelection === 'Paper'){
+    roundResult.textContent = "You Lose! Scissors beats Paper!";
+    computerScore++;
+    scoreMessage.textContent = "Computer: " + computerScore + " Player: " + playerScore;
+  }else if (playerSelection < computerSelection){
+    roundResult.textContent = "You Win! " + playerSelection + " beats " + computerSelection + ".";
+    playerScore++;
+    scoreMessage.textContent = "Computer: " + computerScore + " Player: " + playerScore;
+  }else {
+    roundResult.textContent = "You Lose! " + computerSelection + " beats " + playerSelection + ".";
+    computerScore++;
+    scoreMessage.textContent = "Computer: " + computerScore + " Player: " + playerScore;
   }
 
+  if (computerScore == 5){
+    whoWon.style.display = "block";
+    whoWon.textContent = "The computer reached five first. You've lost. Play again?";
+    computerScore = 0;
+    playerScore = 0;
+  }else if (playerScore == 5){
+    whoWon.style.display = "block";
+    whoWon.textContent = "First to five! You win! Play again?";
+    computerScore = 0;
+    playerScore = 0;
+  }
 }
 
-// code to play the game
-function playRound(playerSelection, computerSelection) {
-  // calculate mathematical result for 0 = lose, 1 = win and 2 = draw (1st line calculates win/lose, 2nd line adds draws in)??
+rock.addEventListener('click', function(){
+  playRound('rock', computerPlay())
+});
+paper.addEventListener('click', function(){
+  playRound('paper', computerPlay())
+});
+scissors.addEventListener('click', function(){
+  playRound('scissors', computerPlay())
+});
 
-  // calulate result
-  if (choices[playerSelection] == choices[computerSelection]) {
-    result = 2;
-  } else {
-    switch (playerSelection) {
-      case "rock":
-        result = +(computerSelection == "scissors");
-        break;
-      case "paper":
-        result = +(computerSelection == "rock");
-        break;
-      case "scissors":
-        result = +(computerSelection == "paper");
-        break;
-      };
-  };
-
-  return result;
-}
-
-// code to generate computer's turn
-function computerPlay() {
-  return Object.keys(choices)[Math.floor(Math.random() * 3)];
-}
 
     </script>
-
-    
 </body>
 </html>
